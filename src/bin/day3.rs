@@ -4,9 +4,8 @@ extern crate regex;
 use std::env;
 use std::fs;
 use std::io;
-use regex::{Regex, Match};
+use regex::{Regex, Captures};
 
-#[derive(Debug)]
 struct Claim {
     id: usize,
     x: usize,
@@ -25,19 +24,23 @@ impl Claim {
 }
 
 fn parse(path: &String) -> io::Result<Vec<Claim>> {
-    fn parse_usize(m: Match) -> usize {
-        m.as_str().parse::<usize>().expect("Failed to parse")
+    fn parse_usize(c: &Captures, i: usize) -> usize {
+        c.get(i)
+            .unwrap()
+            .as_str()
+            .parse::<usize>()
+            .expect("Failed to parse")
     }
 
     let re = Regex::new(r"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
     let text = fs::read_to_string(path)?;
 
     Ok(re.captures_iter(text.as_str()).map(|c| Claim {
-        id: parse_usize(c.get(1).unwrap()),
-        x: parse_usize(c.get(2).unwrap()),
-        y: parse_usize(c.get(3).unwrap()),
-        width: parse_usize(c.get(4).unwrap()),
-        height: parse_usize(c.get(5).unwrap()),
+        id: parse_usize(&c, 1),
+        x: parse_usize(&c, 2),
+        y: parse_usize(&c, 3),
+        width: parse_usize(&c, 4),
+        height: parse_usize(&c, 5),
     }).collect())
 }
 
@@ -49,7 +52,7 @@ fn part1(claims: &Vec<Claim>, fabric: &mut [u32]) -> u32 {
     }
 
     fabric.iter()
-        .filter(|&c| c > &1)
+        .filter(|&c| *c > 1)
         .count() as u32
 }
 
