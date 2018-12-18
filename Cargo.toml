@@ -5,3 +5,4 @@ authors = ["Carl Ekerot <kalle@implode.se>"]
 
 [dependencies]
 itertools = "0.8"
+regex = "1"
