@@ -62,7 +62,7 @@ fn parse(path: &String) -> Result<Vec<Event>> {
     }).sorted().collect())
 }
 
-fn part1(events: &Vec<Event>) -> (u32, u32) {
+fn parts(events: &Vec<Event>) -> (u32, u32) {
     let mut guard_minutes: HashMap<u32, [u8; 60]> = HashMap::new();
     let mut guard = 0;
     let mut sleep: Option<&Event> = None;
@@ -133,5 +133,5 @@ fn main() {
     let input = parse(&path)
         .expect("Failed to parse input");
 
-    println!("{:?}", part1(&input));
+    println!("{:?}", parts(&input));
 }
