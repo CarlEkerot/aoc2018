@@ -1,10 +1,12 @@
 extern crate regex;
 #[macro_use] extern crate itertools;
+extern crate aoc2018;
 
 use std::env;
 use std::fs;
 use std::io;
-use regex::{Regex, Captures};
+use regex::Regex;
+use aoc2018::parse_checked;
 
 struct Claim {
     id: usize,
@@ -24,23 +26,15 @@ impl Claim {
 }
 
 fn parse(path: &String) -> io::Result<Vec<Claim>> {
-    fn parse_usize(c: &Captures, i: usize) -> usize {
-        c.get(i)
-            .unwrap()
-            .as_str()
-            .parse::<usize>()
-            .expect("Failed to parse")
-    }
-
     let re = Regex::new(r"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
     let text = fs::read_to_string(path)?;
 
     Ok(re.captures_iter(text.as_str()).map(|c| Claim {
-        id: parse_usize(&c, 1),
-        x: parse_usize(&c, 2),
-        y: parse_usize(&c, 3),
-        width: parse_usize(&c, 4),
-        height: parse_usize(&c, 5),
+        id: parse_checked::<usize>(&c[1]),
+        x: parse_checked::<usize>(&c[2]),
+        y: parse_checked::<usize>(&c[3]),
+        width: parse_checked::<usize>(&c[4]),
+        height: parse_checked::<usize>(&c[5]),
     }).collect())
 }
 
