@@ -3,11 +3,9 @@ extern crate itertools;
 extern crate aoc2018;
 
 use std::collections::HashMap;
-use std::env;
-use std::fs::{File};
-use std::io::{BufReader, BufRead, Result};
+use std::io::Result;
 use regex::Regex;
-use aoc2018::parse_checked;
+use aoc2018::{parse_checked, read_arg_file_lines};
 use itertools::Itertools;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
@@ -41,16 +39,13 @@ struct Event {
     event_type: EventType,
 }
 
-fn parse(path: &String) -> Result<Vec<Event>> {
+fn parse() -> Result<Vec<Event>> {
+    let lines = read_arg_file_lines();
     let re = Regex::new(r"\[(\d+)-(\d+)-(\d+) (\d+):(\d+)] (.+)").unwrap();
 
-    let f = File::open(path)?;
-    let lines = BufReader::new(f)
-        .lines()
-        .map(|l| l.unwrap());
-
     Ok(lines.map(|l| {
-        let cap = re.captures(l.as_str()).unwrap();
+        let cap = re.captures(l.as_str())
+            .expect("Failed to parse line");
         Event {
             year: parse_checked::<u16>(&cap[1]),
             month: parse_checked::<u8>(&cap[2]),
@@ -125,12 +120,7 @@ fn parts(events: &Vec<Event>) -> (u32, u32) {
 }
 
 fn main() {
-    let path = env::args()
-        .collect::<Vec<String>>()
-        .get(1)
-        .expect("Missing input file parameter").to_string();
-
-    let input = parse(&path)
+    let input = parse()
         .expect("Failed to parse input");
 
     println!("{:?}", parts(&input));

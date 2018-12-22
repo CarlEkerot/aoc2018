@@ -2,11 +2,10 @@ extern crate regex;
 #[macro_use] extern crate itertools;
 extern crate aoc2018;
 
-use std::env;
-use std::fs;
 use std::io;
 use regex::Regex;
 use aoc2018::parse_checked;
+use aoc2018::read_arg_file_lines;
 
 struct Claim {
     id: usize,
@@ -25,17 +24,22 @@ impl Claim {
     }
 }
 
-fn parse(path: &String) -> io::Result<Vec<Claim>> {
+fn parse() -> io::Result<Vec<Claim>> {
+    let lines = read_arg_file_lines();
     let re = Regex::new(r"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
-    let text = fs::read_to_string(path)?;
 
-    Ok(re.captures_iter(text.as_str()).map(|c| Claim {
-        id: parse_checked::<usize>(&c[1]),
-        x: parse_checked::<usize>(&c[2]),
-        y: parse_checked::<usize>(&c[3]),
-        width: parse_checked::<usize>(&c[4]),
-        height: parse_checked::<usize>(&c[5]),
-    }).collect())
+    Ok(lines.map(|l| {
+        let cap = re.captures(l.as_str())
+            .expect("Failed to parse line");
+        Claim {
+            id: parse_checked::<usize>(&cap[1]),
+            x: parse_checked::<usize>(&cap[2]),
+            y: parse_checked::<usize>(&cap[3]),
+            width: parse_checked::<usize>(&cap[4]),
+            height: parse_checked::<usize>(&cap[5]),
+        }
+    })
+    .collect())
 }
 
 fn part1(claims: &Vec<Claim>, fabric: &mut [u32]) -> u32 {
@@ -57,12 +61,7 @@ fn part2(claims: &Vec<Claim>, fabric: &mut [u32]) -> usize {
 }
 
 fn main() {
-    let path = env::args()
-        .collect::<Vec<String>>()
-        .get(1)
-        .expect("Missing input file parameter").to_string();
-
-    let input = parse(&path)
+    let input = parse()
         .expect("Failed to parse input");
 
     let mut fabric = [0u32; 1000 * 1000];

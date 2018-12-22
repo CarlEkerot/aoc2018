@@ -1,14 +1,12 @@
 #[macro_use] extern crate itertools;
+extern crate aoc2018;
 
-use std::env;
-use std::fs;
-use std::io;
+use aoc2018::read_arg_file_lines;
 
-fn parse(path: &String) -> io::Result<Vec<Vec<u8>>> {
-    Ok(fs::read(path)?
-        .split(|c| char::from(*c) == '\n')
-        .map(Vec::from)
-        .collect())
+fn parse() -> Vec<Vec<u8>> {
+    read_arg_file_lines()
+        .map(|l| Vec::from(l.as_bytes()))
+        .collect()
 }
 
 fn difference(a: &Vec<u8>, b: &Vec<u8>) -> usize {
@@ -52,13 +50,7 @@ fn part2(ids: &Vec<Vec<u8>>) -> String {
 }
 
 fn main() {
-    let path = env::args()
-        .collect::<Vec<String>>()
-        .get(1)
-        .expect("Missing input file parameter").to_string();
-
-    let input = parse(&path)
-        .expect("Failed to parse input");
+    let input = parse();
 
     println!("{}", part1(&input));
     println!("{}", part2(&input));

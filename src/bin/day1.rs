@@ -1,12 +1,11 @@
-use std::collections::HashSet;
-use std::env;
-use std::fs;
+extern crate aoc2018;
 
-fn parse(path: String) -> Vec<i32> {
-    fs::read_to_string(path)
-        .expect("Failed to read file")
-        .split_whitespace()
-        .map(|p| p.parse::<i32>().unwrap())
+use std::collections::HashSet;
+use aoc2018::{read_arg_file_lines, parse_checked};
+
+fn parse() -> Vec<i32> {
+    read_arg_file_lines()
+        .map(|p| parse_checked::<i32>(p.as_str()))
         .collect()
 }
 
@@ -30,11 +29,7 @@ fn part2(input: &Vec<i32>) -> i32 {
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let path = args.get(1)
-        .expect("Missing input file parameter").to_string();
-
-    let input = parse(path);
+    let input = parse();
 
     println!("{}", part1(&input));
     println!("{}", part2(&input));
